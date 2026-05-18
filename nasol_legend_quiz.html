@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나솔 레전드 명대사 퀴즈</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+:root{
+  --p:#7C6CF0;--pl:#EEF0FF;--pd:#4A3FD4;
+  --pink:#F26BA0;--pink-l:#FFECF5;
+  --green:#27AE60;--green-l:#EAFAF1;
+  --red:#E74C3C;--red-l:#FDEDEC;
+  --amber:#E67E22;--amber-l:#FEF5EC;
+  --bg:#F7F5FF;--card:#fff;
+  --t:#1A1A2E;--t2:#6B6B8A;
+  --bd:rgba(124,108,240,0.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
+.wrap{max-width:540px;margin:0 auto;padding:1.5rem 1.25rem 5rem}
+
+.header{text-align:center;padding-top:1rem;margin-bottom:1.75rem}
+.badge{display:inline-block;background:var(--pl);color:var(--pd);font-size:12px;font-weight:700;padding:5px 14px;border-radius:99px;margin-bottom:.75rem}
+h1{font-size:24px;font-weight:700;line-height:1.3}
+.sub{font-size:14px;color:var(--t2);margin-top:.4rem;line-height:1.6}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:1.5rem;margin-bottom:1rem}
+
+/* 인트로 */
+.info-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
+.info-box{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:14px 8px;text-align:center}
+.info-num{font-size:20px;font-weight:700;color:var(--pd)}
+.info-label{font-size:11px;color:var(--t2);margin-top:3px}
+.type-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1.25rem}
+.type-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--bd);font-size:13px;line-height:1.5}
+.ti{font-size:18px;flex-shrink:0}
+.start-btn{width:100%;padding:14px;background:var(--p);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .2s}
+.start-btn:hover{background:var(--pd)}
+
+/* 진행바 */
+.prog-wrap{margin-bottom:1.25rem}
+.prog-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prog-label{font-size:13px;color:var(--t2)}
+.score-pill{font-size:13px;font-weight:700;color:var(--pd);background:var(--pl);padding:3px 12px;border-radius:99px}
+.prog-track{height:5px;background:var(--bd);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--p),var(--pink));border-radius:99px;transition:width .5s ease}
+
+/* 기수 태그 */
+.kisu-row{display:flex;align-items:center;gap:8px;margin-bottom:.875rem;flex-wrap:wrap}
+.kisu-tag{font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--pl);color:var(--pd)}
+.q-type-tag{font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px}
+.qt-blank{background:var(--amber-l);color:var(--amber)}
+.qt-next{background:var(--pink-l);color:var(--pink)}
+.qt-ox{background:var(--green-l);color:var(--green)}
+
+/* 유튜브 */
+.yt-wrap{position:relative;width:100%;padding-bottom:56.25%;border-radius:12px;overflow:hidden;margin-bottom:1rem;background:#000}
+.yt-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+.yt-label{font-size:11px;color:var(--t2);margin-bottom:1rem;display:flex;align-items:center;gap:4px}
+
+/* 상황 박스 (다음 대사 유형) */
+.scene-box{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:1rem 1.125rem;margin-bottom:1rem;font-size:13px;line-height:1.8;color:var(--t2)}
+.scene-box strong{color:var(--t)}
+.scene-box .speaker{display:inline-block;background:var(--pl);color:var(--pd);font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;margin-right:4px}
+
+/* 대사 박스 */
+.quote-box{background:var(--bg);border-left:3px solid var(--p);border-radius:0 10px 10px 0;padding:1rem 1.25rem;margin-bottom:1rem;font-size:16px;font-weight:500;line-height:1.8;color:var(--t)}
+.blank{display:inline-block;min-width:70px;border-bottom:2.5px solid var(--p);color:var(--p);font-weight:900;text-align:center;padding:0 4px}
+.quote-fade{color:var(--t2);font-style:italic}
+.hint-txt{font-size:12px;color:var(--t2);margin-top:.375rem;font-style:italic}
+
+/* 질문 */
+.q-text{font-size:16px;font-weight:700;color:var(--t);line-height:1.5;margin-bottom:1rem}
+
+/* 선택지 */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{text-align:left;padding:13px 16px;border:1.5px solid var(--bd);border-radius:12px;font-size:14px;font-family:inherit;color:var(--t);background:var(--bg);cursor:pointer;transition:all .15s;line-height:1.5;display:flex;align-items:center;gap:10px}
+.opt:hover:not(:disabled){border-color:var(--p);background:var(--pl)}
+.opt:disabled{cursor:default}
+.opt-key{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;color:var(--t2)}
+.opt.correct{border-color:var(--green)!important;background:var(--green-l)!important}
+.opt.correct .opt-key{border-color:var(--green);background:var(--green);color:#fff}
+.opt.wrong{border-color:var(--red)!important;background:var(--red-l)!important}
+.opt.wrong .opt-key{border-color:var(--red);background:var(--red);color:#fff}
+.opt.dimmed{opacity:.35}
+
+/* 해설 */
+.explain{margin-top:1rem;padding:1rem 1.125rem;border-radius:12px;font-size:13px;line-height:1.75;border:1px solid}
+.explain.c{background:var(--green-l);border-color:#27AE6025}
+.explain.w{background:var(--red-l);border-color:#E74C3C25}
+.el{font-size:14px;font-weight:700;display:block;margin-bottom:.35rem}
+.et{color:var(--t);opacity:.85}
+
+.next-btn{width:100%;padding:14px;background:var(--p);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:1rem;display:none}
+.next-btn:hover{background:var(--pd)}
+.next-btn.show{display:block}
+
+/* 결과 */
+.result-top{text-align:center;padding:1rem 0 1.25rem}
+.r-emoji{font-size:56px;margin-bottom:.75rem}
+.r-score{font-size:48px;font-weight:900;color:var(--pd)}
+.r-denom{font-size:18px;color:var(--t2)}
+.r-grade{display:inline-block;padding:6px 20px;border-radius:99px;font-size:14px;font-weight:700;margin-top:.75rem}
+.r-msg{font-size:14px;line-height:1.8;color:var(--t2);margin-top:.875rem}
+.divider{height:1px;background:var(--bd);margin:1.25rem 0}
+.review-ttl{font-size:11px;font-weight:700;letter-spacing:.07em;color:var(--t2);margin-bottom:.875rem}
+.review-list{display:flex;flex-direction:column;gap:7px}
+.ri{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.5}
+.ri.ok{background:var(--green-l)}
+.ri.fail{background:var(--red-l)}
+.ri-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.ri-q{font-weight:500;color:var(--t)}
+.ri-ans{color:var(--t2);font-size:12px;margin-top:2px}
+.retry-btn{width:100%;padding:14px;background:var(--p);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:1.25rem}
+
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- 인트로 -->
+<div id="s-intro">
+  <div class="header">
+    <div class="badge">🎬 나솔 레전드</div>
+    <h1>명대사 퀴즈</h1>
+    <p class="sub">역대 레전드 기수 명대사 빈칸 채우기!<br>영상 보고 감 잡아서 맞혀보세요 🌹</p>
+  </div>
+  <div class="card">
+    <div class="info-row">
+      <div class="info-box"><div class="info-num">10</div><div class="info-label">문제</div></div>
+      <div class="info-box"><div class="info-num">6~18기</div><div class="info-label">레전드 기수</div></div>
+      <div class="info-box"><div class="info-num">유튜브</div><div class="info-label">클립 포함</div></div>
+    </div>
+    <div class="type-list">
+      <div class="type-item"><span class="ti">💬</span><div><strong>빈칸 채우기</strong> — 명대사의 핵심 단어를 맞혀보세요</div></div>
+      <div class="type-item"><span class="ti">➡️</span><div><strong>다음 대사는?</strong> — 기수·상황 설명 후, 이 때 ○○이 한 말은?</div></div>
+      <div class="type-item"><span class="ti">⭕</span><div><strong>맞다 틀리다</strong> — 실제로 있었던 대사인지 판별</div></div>
+    </div>
+    <button class="start-btn" onclick="startQuiz()">퀴즈 시작 🔥</button>
+  </div>
+</div>
+
+<!-- 퀴즈 -->
+<div id="s-quiz" class="hidden">
+  <div class="prog-wrap">
+    <div class="prog-meta">
+      <span class="prog-label" id="prog-label">1 / 10</span>
+      <span class="score-pill" id="score-pill">0점</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div class="card" id="q-card"></div>
+</div>
+
+<!-- 결과 -->
+<div id="s-result" class="hidden">
+  <div class="header"><div class="badge">🏆 최종 결과</div></div>
+  <div class="card">
+    <div class="result-top">
+      <div class="r-emoji" id="r-emoji"></div>
+      <div><span class="r-score" id="r-score"></span><span class="r-denom"> / 10점</span></div>
+      <div class="r-grade" id="r-grade"></div>
+      <div class="r-msg" id="r-msg"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="review-ttl">문제별 결과</div>
+    <div class="review-list" id="r-review"></div>
+    <button class="retry-btn" onclick="retryQuiz()">다시 도전 🔄</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+const QS = [
+  // Q1 — 6기 / 빈칸
+  {
+    kisu: '6기', type: 'blank', typeLabel: '💬 빈칸 채우기',
+    ytId: '9xW9c_a6-rg', ytStart: 0,
+    ytLabel: '📺 10기·16기·22기 자기소개 명장면 모음 (6기 맥락 참고)',
+    quoteHtml: `"내 <span class='blank'>_____</span>에서의 주인공은 너였어."`,
+    hint: '주인공이 등장하는 영상 콘텐츠',
+    q: '빈칸에 들어갈 말은?',
+    opts: ['영화', '드라마', '소설', '꿈'],
+    answer: 1,
+    okEmoji: '🎬', failEmoji: '😅',
+    explain: '"내 드라마에서의 주인공은 너였어." — 6기 광수(변호사)의 레전드 고백 명대사. 나솔 역사상 가장 낭만적인 자기소개 어록 중 하나로, 6기는 이 기수에서 무려 2쌍의 결혼 커플이 탄생했어요.'
+  },
+
+  // Q2 — 8기 / 빈칸
+  {
+    kisu: '8기', type: 'blank', typeLabel: '💬 빈칸 채우기',
+    ytId: 'hEarcgjuLX0', ytStart: 0,
+    ytLabel: '📺 10기·16기 레전드 명장면 모음',
+    quoteHtml: `"<span class='blank'>___</span>할게요."`,
+    hint: '문을 두드리는 소리를 표현한 의성어 한 글자',
+    q: '8기 영식이 고백하며 한 말의 빈칸은?',
+    opts: ['노크', '쿵', '똑똑', '콩'],
+    answer: 1,
+    okEmoji: '🚪', failEmoji: '😂',
+    explain: '"쿵할게요." — 8기 영식의 유일무이한 고백 방식. 상대방의 마음 문을 두드리겠다는 의미로 "쿵할게요"라고 한 이 발언은 나솔 역대 가장 독창적인 고백 멘트로 지금도 회자돼요.'
+  },
+
+  // Q3 — 9기 / 빈칸
+  {
+    kisu: '9기', type: 'blank', typeLabel: '💬 빈칸 채우기',
+    ytId: 'GbOji7TWcVo', ytStart: 0,
+    ytLabel: '📺 나솔 9기 라이브 방송',
+    quoteHtml: `"내가 푼 문제의 <span class='blank'>____</span>은 광수야."`,
+    hint: '수학 시험에서 바라는 것',
+    q: '빈칸에 들어갈 말은?',
+    opts: ['힌트', '정답', '오답', '풀이'],
+    answer: 1,
+    okEmoji: '💜', failEmoji: '😅',
+    explain: '"내가 푼 문제의 정답은 광수야." — 9기 영숙의 레전드 고백 어록. 좋아하는 감정을 수학 문제에 빗댄 이 표현은 나솔 최고의 고백 명대사로 손꼽혀요. 그리고 실제로 둘은 결혼에 성공했습니다 🎉'
+  },
+
+  // Q4 — 9기 / 빈칸
+  {
+    kisu: '9기', type: 'blank', typeLabel: '💬 빈칸 채우기',
+    ytId: 'ybmyQVoSwKQ', ytStart: 0,
+    ytLabel: '📺 9기 옥순 명장면',
+    quoteHtml: `"을지로 <span class='blank'>____</span>."`,
+    hint: '유명 한국 여배우 이름',
+    q: '9기 옥순의 자기소개 명대사 빈칸은?',
+    opts: ['전지현', '김태희', '김사랑', '손예진'],
+    answer: 2,
+    okEmoji: '💅', failEmoji: '😂',
+    explain: '"을지로 김사랑." — 9기 옥순이 자신을 소개하며 한 말. 을지로 직장 + 외모가 배우 김사랑과 닮았다는 자신감 넘치는 이 자기소개가 나솔 레전드 명장면이 됐어요.'
+  },
+
+  // Q5 — 10기 / 빈칸
+  {
+    kisu: '10기', type: 'blank', typeLabel: '💬 빈칸 채우기',
+    ytId: 'hEarcgjuLX0', ytStart: 135,
+    ytLabel: '📺 10기·16기 레전드 명장면 모음 — 2:15부터',
+    quoteHtml: `"의사? So what? 검사? 필요없어.<br>난 진짜 <span class='blank'>___</span>을 해줄 수 있어."`,
+    hint: '퍼센트로 따지면 최대치',
+    q: '빈칸에 들어갈 숫자는?',
+    opts: ['10', '50', '100', '200'],
+    answer: 2,
+    okEmoji: '💯', failEmoji: '😅',
+    explain: '"난 진짜 100을 해줄 수 있어." — 10기 상철의 자기소개 레전드 명대사. 고스펙 경쟁자들을 향해 직업보다 진심 100%로 승부하겠다는 이 발언은 나솔 자기소개 역사상 최고의 명대사로 남아있어요.'
+  },
+
+  // Q6 — 10기 / 다음 대사
+  {
+    kisu: '10기', type: 'next', typeLabel: '➡️ 다음 대사는?',
+    ytId: 'hEarcgjuLX0', ytStart: 50,
+    ytLabel: '📺 10기·16기 레전드 명장면 모음',
+    scene: `<strong>10기 돌싱특집.</strong> 여러 출연자들이 감정적으로 언쟁하던 중 목소리가 점점 높아졌다. 그 순간 <span class="speaker">10기 정숙</span>이 아주 차분한 목소리로 끊으며 말했다.`,
+    quoteHtml: `"언성 낮춰요,`,
+    hint: '바로 앞에 나온 단어를 한 번 더 반복',
+    q: '이 상황에서, 정숙이 한 말은?',
+    opts: ['"제발요."', '"언성."', '"지금 당장요."', '"부탁드려요."'],
+    answer: 1,
+    okEmoji: '🎤', failEmoji: '😂',
+    explain: '"언성 낮춰요, 언성." — 10기 정숙의 레전드 진압 명대사. "언성"을 두 번 반복하는 특유의 톤이 포인트예요. 이후 SNL, 코미디빅리그에서 패러디될 만큼 10기를 대표하는 명장면이 됐습니다.'
+  },
+
+  // Q7 — 10기 / 빈칸
+  {
+    kisu: '10기', type: 'blank', typeLabel: '💬 빈칸 채우기',
+    ytId: 'RXssaqFhCvc', ytStart: 0,
+    ytLabel: '📺 나솔 10기 하이라이트',
+    quoteHtml: `"<span class='blank'>_</span>만 해줘.<br>난 바라는 건 딱 <span class='blank'>_</span>이야."`,
+    hint: '가장 작은 자연수',
+    q: '빈칸에 공통으로 들어갈 숫자는?',
+    opts: ['0', '1', '3', '10'],
+    answer: 1,
+    okEmoji: '🥺', failEmoji: '😂',
+    explain: '"1만 해줘. 난 바라는 건 딱 1이야." — 10기 영수의 레전드 명대사. 100을 바라는 게 아니라 딱 1만 해달라는 소박하고 진심 어린 이 말이 시청자들의 마음을 크게 울렸어요.'
+  },
+
+  // Q8 — 12기 / 다음 대사
+  {
+    kisu: '12기', type: 'next', typeLabel: '➡️ 다음 대사는?',
+    ytId: '9xW9c_a6-rg', ytStart: 60,
+    ytLabel: '📺 나솔 자기소개 명장면 모음',
+    scene: `<strong>12기 모태솔로 특집.</strong> 한 출연자에게 계속 대시 신호를 보내던 영수가, 상대방이 자신에게 전혀 관심 없다는 걸 알게 됐다. 그 직후 영수가 단호하게 선언했다.`,
+    quoteHtml: `"<span class='blank'>___</span> 금지."`,
+    hint: '본인 스스로를 가리키는 두 글자',
+    q: '이 상황에서, 12기 영수가 한 말은?',
+    opts: ['"대화 금지."', '"내 얘기 금지."', '"눈 마주침 금지."', '"접근 금지."'],
+    answer: 1,
+    okEmoji: '🚫', failEmoji: '😅',
+    explain: '"내 얘기 금지." — 12기 영수의 레전드 명대사. 관심 없는 상대에게 더 이상 자신의 이야기를 하지 말라고 선언한 이 말은, 나솔 역대 자존심 발언 중 손꼽히는 어록이에요.'
+  },
+
+  // Q9 — 13기 / 빈칸
+  {
+    kisu: '13기', type: 'blank', typeLabel: '💬 빈칸 채우기',
+    ytId: 'GbOji7TWcVo', ytStart: 30,
+    ytLabel: '📺 나솔 공식 채널',
+    quoteHtml: `"보고싶어<span class='blank'>__</span>!"`,
+    hint: '귀엽게 말하는 말투로 마무리하는 두 글자',
+    q: '13기 광수의 레전드 문자 명대사 빈칸은?',
+    opts: ['요', '쪙', '용', '잖아'],
+    answer: 1,
+    okEmoji: '💌', failEmoji: '😂',
+    explain: '"보고싶어쪙!" — 13기 광수(삼성전자 코딩)의 레전드 문자 명대사. 나솔 역사상 가장 독특한 애교 표현으로, 이후 "쪙"이라는 표현 자체가 나솔 밈이 됐어요.'
+  },
+
+  // Q10 — 18기 / 다음 대사
+  {
+    kisu: '18기', type: 'next', typeLabel: '➡️ 다음 대사는?',
+    ytId: 'vJezSPrLp14', ytStart: 0,
+    ytLabel: '📺 나는솔로 16기 요약 (18기 맥락 참고)',
+    scene: `<strong>18기 빌런 대방출 기수.</strong> 출연자들이 서로 스펙과 조건을 이야기하는 자리. <span class="speaker">18기 옥순</span>이 나이와 연봉 관계에 대해 매우 직접적으로 자신의 기준을 밝혔다.`,
+    quoteHtml: `"연봉이 작으면`,
+    hint: '나이 많아도 연봉이 적으면 서열이 뒤집힌다는 뜻',
+    q: '이 상황에서, 18기 옥순이 한 말은?',
+    opts: [
+      '"그냥 친구야."',
+      '"오빠도 동생."',
+      '"남자도 아니야."',
+      '"만날 필요 없어."'
+    ],
+    answer: 1,
+    okEmoji: '😶', failEmoji: '😂',
+    explain: '"연봉이 작으면 오빠도 동생." — 18기 옥순의 레전드 발언. 나이가 아닌 연봉으로 서열을 정하겠다는 이 직진 발언은 방영 후 온라인을 강타했어요. 18기는 빌런 대방출 기수로 역대급 어록이 쏟아진 기수예요.'
+  }
+];
+
+let cur = 0, score = 0, answered = false, results = [];
+
+function startQuiz() {
+  cur = 0; score = 0; answered = false; results = [];
+  document.getElementById('s-intro').classList.add('hidden');
+  document.getElementById('s-result').classList.add('hidden');
+  document.getElementById('s-quiz').classList.remove('hidden');
+  renderQ();
+}
+
+function renderQ() {
+  const q = QS[cur];
+  document.getElementById('prog-label').textContent = `${cur + 1} / ${QS.length}`;
+  document.getElementById('score-pill').textContent = `${score}점`;
+  document.getElementById('prog-fill').style.width = `${(cur / QS.length) * 100}%`;
+  answered = false;
+
+  // 유형별 추가 콘텐츠
+  let extraHtml = '';
+  if (q.type === 'next' && q.scene) {
+    extraHtml = `<div class="scene-box">${q.scene}</div>`;
+  }
+
+  // 대사 박스
+  const quoteHtml = `<div class="quote-box">${q.quoteHtml}${q.type === 'next' ? ' <span class="quote-fade">…?</span>' : ''}</div>
+    ${q.hint ? `<p class="hint-txt">💡 힌트: ${q.hint}</p>` : ''}`;
+
+  const optsHtml = q.opts.map((o, i) => `
+    <button class="opt" id="opt-${i}" onclick="pick(${i})">
+      <span class="opt-key">${['A','B','C','D'][i]}</span>
+      <span>${o}</span>
+    </button>`).join('');
+
+  const typeCls = q.type === 'blank' ? 'qt-blank' : q.type === 'next' ? 'qt-next' : 'qt-ox';
+
+  document.getElementById('q-card').innerHTML = `
+    <div class="kisu-row">
+      <span class="kisu-tag">${q.kisu}</span>
+      <span class="q-type-tag ${typeCls}">${q.typeLabel}</span>
+    </div>
+
+    <div class="yt-wrap">
+      <iframe src="https://www.youtube.com/embed/${q.ytId}?start=${q.ytStart}&rel=0" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <div class="yt-label">▶ ${q.ytLabel}</div>
+
+    ${extraHtml}
+    ${quoteHtml}
+
+    <div class="q-text">${q.q}</div>
+    <div class="opts">${optsHtml}</div>
+    <div id="explain-area"></div>
+    <button class="next-btn" id="next-btn" onclick="goNext()">
+      ${cur === QS.length - 1 ? '결과 보기 🏆' : '다음 문제 →'}
+    </button>
+  `;
+}
+
+function pick(i) {
+  if (answered) return;
+  answered = true;
+  const q = QS[cur];
+  const correct = i === q.answer;
+  if (correct) score++;
+  results.push({ q: q.q, correct, userAns: q.opts[i], correctAns: q.opts[q.answer] });
+  document.getElementById('score-pill').textContent = `${score}점`;
+
+  q.opts.forEach((_, idx) => {
+    const btn = document.getElementById(`opt-${idx}`);
+    btn.disabled = true;
+    if (idx === q.answer) btn.classList.add('correct');
+    else if (idx === i) btn.classList.add('wrong');
+    else btn.classList.add('dimmed');
+  });
+
+  const emoji = correct ? q.okEmoji : q.failEmoji;
+  const cls = correct ? 'c' : 'w';
+  const label = correct ? `${emoji} 정답!` : `${emoji} 오답!  정답: ${q.opts[q.answer]}`;
+  document.getElementById('explain-area').innerHTML = `
+    <div class="explain ${cls}">
+      <span class="el">${label}</span>
+      <span class="et">${q.explain}</span>
+    </div>`;
+  document.getElementById('next-btn').classList.add('show');
+}
+
+function goNext() {
+  if (cur < QS.length - 1) { cur++; renderQ(); }
+  else showResult();
+}
+
+function showResult() {
+  document.getElementById('s-quiz').classList.add('hidden');
+  document.getElementById('s-result').classList.remove('hidden');
+  let emoji, grade, msg, gb, gc;
+  if (score >= 9) {
+    emoji='👑'; grade='나솔 마스터'; gb='#FEF9E7'; gc='#8B6914';
+    msg='완벽! 기수별 명대사를 전부 외우고 있는 진짜 나솔러. 솔로나라 명예 촌장 자격 있음 🏆';
+  } else if (score >= 7) {
+    emoji='🔥'; grade='나솔 찐팬'; gb='#EEF0FF'; gc='#4A3FD4';
+    msg='대부분 맞혔어요! 레전드 기수들 제대로 섭렵한 진짜 팬이에요.';
+  } else if (score >= 5) {
+    emoji='😎'; grade='나솔 중급자'; gb='#EAFAF1'; gc='#1A7A4A';
+    msg='절반 이상 맞혔어요! 6기→9기→10기 정주행하면 마스터 등극 가능해요.';
+  } else if (score >= 3) {
+    emoji='🙂'; grade='나솔 입문자'; gb='#FFECF5'; gc='#C2185B';
+    msg='아직 나솔 초보 단계예요. 9기부터 시작해서 레전드 기수 쭉 보면 다 맞힐 수 있어요!';
+  } else {
+    emoji='😅'; grade='나솔 뉴비'; gb='#FDEDEC'; gc='#922B21';
+    msg='지금 당장 유튜브에 "나솔 레전드" 검색! 인생 예능이 기다리고 있어요 😂';
+  }
+  document.getElementById('r-emoji').textContent = emoji;
+  document.getElementById('r-score').textContent = score;
+  const rg = document.getElementById('r-grade');
+  rg.textContent = grade; rg.style.background = gb; rg.style.color = gc;
+  document.getElementById('r-msg').textContent = msg;
+  document.getElementById('r-review').innerHTML = results.map((r, i) => `
+    <div class="ri ${r.correct ? 'ok' : 'fail'}">
+      <span class="ri-icon">${r.correct ? '✅' : '❌'}</span>
+      <div>
+        <div class="ri-q">Q${i+1}. ${r.q}</div>
+        ${!r.correct ? `<div class="ri-ans">내 답: ${r.userAns}<br>정답: ${r.correctAns}</div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function retryQuiz() {
+  document.getElementById('s-result').classList.add('hidden');
+  startQuiz();
+}
+</script>
+</body>
+</html>
