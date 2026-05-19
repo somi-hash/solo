@@ -197,6 +197,8 @@ input[type=text]:focus{border-color:var(--p)}
     <div style="font-size:13px;color:var(--t2);margin-bottom:1rem" id="m-persona"></div>
     <div style="font-size:14px;line-height:1.8;margin-bottom:1rem" id="m-desc"></div>
     <div class="m-traits" id="m-traits"></div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:.07em;color:var(--t2);margin-bottom:10px">🎬 레전드 기수 &amp; 명대사</div>
+    <div id="m-legend" style="display:flex;flex-direction:column;gap:8px;margin-bottom:1.25rem"></div>
     <div style="font-size:13px;font-weight:500;color:var(--t2);margin-bottom:.75rem" id="m-who"></div>
     <div id="m-parts"></div>
     <button class="modal-close" onclick="document.getElementById('modal-bg').classList.add('hidden')">닫기</button>
@@ -279,18 +281,66 @@ const Qs=[
 ];
 
 const CH={
-  영숙:{g:'여',e:'💼',persona:'일 잘하는 커리어우먼 · 결혼율 1위',desc:"강단 있고 일 잘하는 커리어우먼. 기준이 높고 쉽게 타협하지 않지만, 그만큼 믿음직하다. 진심이 확실한 사람.",traits:["일 잘함","기준 높음","카리스마","직진형"]},
-  정숙:{g:'여',e:'🗣️',persona:'솔직한 맏언니 · 직선적',desc:"솔직하고 맏언니 기질. 하고 싶은 말은 참지 않고, 팀에서 언제나 가장 현실적인 조언을 해주는 사람.",traits:["솔직함","맏언니","직선적","든든함"]},
-  순자:{g:'여',e:'🎯',persona:'막내 · 마이웨이 · MZ세대',desc:"막내 기질에 마이웨이 정신. 분위기에 휩쓸리기보다 내 갈 길을 가는 스타일. 말수는 적어도 소신은 확실하다.",traits:["마이웨이","소신 있음","막내","독립적"]},
-  영자:{g:'여',e:'✨',persona:'분위기 메이커 · 에너지 넘침',desc:"팀 분위기 살리는 에너지 덩어리. 가끔 오지라퍼 소리 듣지만 없으면 허전한 사람.",traits:["에너지 넘침","분위기 메이커","오지라퍼","적극적"]},
-  옥순:{g:'여',e:'💅',persona:'비주얼 담당 · 강한 자기 세계관',desc:"이 팀에서 비주얼 담당. 강한 자기 세계관이 있고, 외모만큼 개성도 확실하다. 첫인상부터 눈에 띈다.",traits:["비주얼 담당","개성 강함","자기 세계관","반전 매력"]},
-  현숙:{g:'여',e:'🌿',persona:'조용한 안정형 · 균형 감각',desc:"조용하지만 없으면 안 되는 사람. 균형 잡힌 무던함으로 팀의 안정감을 만들어준다.",traits:["무던함","균형 감각","안정적","내조형"]},
-  영수:{g:'남',e:'🏛️',persona:'의젓한 맏형 · 이과 감성 · 최연장자',desc:"팀 최연장자, 의젓한 큰형. 고민할 때 조언을 구하게 되는 사람. 이과 감성에 묵직한 신뢰감이 있다.",traits:["의젓함","큰형 포지션","조언자","이과 감성"]},
-  광수:{g:'남',e:'🧠',persona:'고스펙 브레인 · 독특한 매력',desc:"고스펙 브레인. 능력은 탑이고 논리는 완벽한데 가끔 독특한 행동으로 모두를 의아하게 만든다.",traits:["고스펙","브레인","독특함","자기 세계관"]},
-  영호:{g:'남',e:'🌊',persona:'감성파 · 우유부단 · 섬세함',desc:"감성파에 결정이 느린 스타일. 분위기 잘 타고 공감 능력도 있지만, 결정적 순간에 흔들리는 것이 아쉬운 사람.",traits:["감성적","우유부단","공감 능력","섬세함"]},
-  영식:{g:'남',e:'🎽',persona:'깔끔한 훈남 · 큰 키 · 착실',desc:"키 크고 단정한 훈남 스타일. 팀 내에서 이성과 동성 모두에게 호감을 얻는다.",traits:["깔끔한 외모","큰 키","착실함","호감형"]},
-  영철:{g:'남',e:'💪',persona:'남성적 비주얼 · 선 굵은 존재감',desc:"선 굵고 남성적인 외모로 팀 내 비주얼 담당. 중저음 목소리와 묵직한 존재감이 있다.",traits:["남성적 외모","비주얼 담당","묵직함","존재감"]},
-  상철:{g:'남',e:'⚖️',persona:'균형형 · 무난한 팀의 허리',desc:"두루두루 균형 잡힌 팀의 허리. 튀지 않지만 없으면 빈자리가 느껴지는 안정형.",traits:["균형형","무난함","안정적","팀의 허리"]}
+  영숙:{g:'여',e:'💼',persona:'일 잘하는 커리어우먼 · 결혼율 1위',desc:"강단 있고 일 잘하는 커리어우먼. 기준이 높고 쉽게 타협하지 않지만, 그만큼 믿음직하다. 진심이 확실한 사람.",traits:["일 잘함","기준 높음","카리스마","직진형"],
+    legend:[
+      {kisu:"9기",quote:"내가 푼 문제의 정답은 광수야."},
+      {kisu:"10기",quote:"우리 모두 행복할 자격이 있다."}
+    ]},
+  정숙:{g:'여',e:'🗣️',persona:'솔직한 맏언니 · 직선적',desc:"솔직하고 맏언니 기질. 하고 싶은 말은 참지 않고, 팀에서 언제나 가장 현실적인 조언을 해주는 사람.",traits:["솔직함","맏언니","직선적","든든함"],
+    legend:[
+      {kisu:"10기",quote:"언성 낮춰요, 언성."},
+      {kisu:"10기",quote:"(SNL 패러디까지 됐던 바로 그 장면의 주인공 🎤)"}
+    ]},
+  순자:{g:'여',e:'🎯',persona:'막내 · 마이웨이 · MZ세대',desc:"막내 기질에 마이웨이 정신. 분위기에 휩쓸리기보다 내 갈 길을 가는 스타일. 말수는 적어도 소신은 확실하다.",traits:["마이웨이","소신 있음","막내","독립적"],
+    legend:[
+      {kisu:"9기",quote:"(영호가 싫어하는 조건을 모두 갖춘 여자로 화제가 된 마이웨이 캐릭터)"},
+      {kisu:"10기",quote:"(고독정식도 당당하게 혼자 즐기는 진짜 마이웨이)"}
+    ]},
+  영자:{g:'여',e:'✨',persona:'분위기 메이커 · 에너지 넘침',desc:"팀 분위기 살리는 에너지 덩어리. 가끔 오지라퍼 소리 듣지만 없으면 허전한 사람.",traits:["에너지 넘침","분위기 메이커","오지라퍼","적극적"],
+    legend:[
+      {kisu:"10기",quote:"(영철 두고 현숙과 벌인 댄스배틀 — 제로투로 맞받아쳐 화제)"},
+      {kisu:"15기",quote:"(오지라퍼 기질로 커플 여럿 이어줘 출연료 더 줘야 한다는 말까지 나온 기수)"}
+    ]},
+  옥순:{g:'여',e:'💅',persona:'비주얼 담당 · 강한 자기 세계관',desc:"이 팀에서 비주얼 담당. 강한 자기 세계관이 있고, 외모만큼 개성도 확실하다. 첫인상부터 눈에 띈다.",traits:["비주얼 담당","개성 강함","자기 세계관","반전 매력"],
+    legend:[
+      {kisu:"9기",quote:"을지로 김사랑."},
+      {kisu:"9기",quote:"맥모닝! / 그거 내가 준 거야."}
+    ]},
+  현숙:{g:'여',e:'🌿',persona:'조용한 안정형 · 균형 감각',desc:"조용하지만 없으면 안 되는 사람. 균형 잡힌 무던함으로 팀의 안정감을 만들어준다.",traits:["무던함","균형 감각","안정적","내조형"],
+    legend:[
+      {kisu:"6기",quote:"(고구마 사랑으로 유명한 첫 현숙 — 이후 고구마언니의 솔로식당 유튜브 운영)"},
+      {kisu:"10기",quote:"(영자와 댄스배틀, 전통무용으로 맞선 의외의 반전 현숙)"}
+    ]},
+  영수:{g:'남',e:'🏛️',persona:'의젓한 맏형 · 이과 감성 · 최연장자',desc:"팀 최연장자, 의젓한 큰형. 고민할 때 조언을 구하게 되는 사람. 이과 감성에 묵직한 신뢰감이 있다.",traits:["의젓함","큰형 포지션","조언자","이과 감성"],
+    legend:[
+      {kisu:"10기",quote:"선풍기 안 가져왔어요?"},
+      {kisu:"10기",quote:"1만 해줘. 난 바라는 건 딱 1이야."}
+    ]},
+  광수:{g:'남',e:'🧠',persona:'고스펙 브레인 · 독특한 매력',desc:"고스펙 브레인. 능력은 탑이고 논리는 완벽한데 가끔 독특한 행동으로 모두를 의아하게 만든다.",traits:["고스펙","브레인","독특함","자기 세계관"],
+    legend:[
+      {kisu:"6기",quote:"내 드라마에서의 주인공은 너였어."},
+      {kisu:"13기",quote:"보고싶어쪙!"}
+    ]},
+  영호:{g:'남',e:'🌊',persona:'감성파 · 우유부단 · 섬세함',desc:"감성파에 결정이 느린 스타일. 분위기 잘 타고 공감 능력도 있지만, 결정적 순간에 흔들리는 것이 아쉬운 사람.",traits:["감성적","우유부단","공감 능력","섬세함"],
+    legend:[
+      {kisu:"10기",quote:"(그대 같은 사람을 만나고 싶어서 울었었거든 — 영식의 명대사지만 영호 감성의 정수)"},
+      {kisu:"10기",quote:"(머리로 사랑하지 마요 — 이 말을 가장 많이 들어야 했던 캐릭터)"}
+    ]},
+  영식:{g:'남',e:'🎽',persona:'깔끔한 훈남 · 큰 키 · 착실',desc:"키 크고 단정한 훈남 스타일. 팀 내에서 이성과 동성 모두에게 호감을 얻는다.",traits:["깔끔한 외모","큰 키","착실함","호감형"],
+    legend:[
+      {kisu:"8기",quote:"쿵할게요."},
+      {kisu:"10기",quote:"그대 같은 사람을 만나고 싶어서 울었었거든."}
+    ]},
+  영철:{g:'남',e:'💪',persona:'남성적 비주얼 · 선 굵은 존재감',desc:"선 굵고 남성적인 외모로 팀 내 비주얼 담당. 중저음 목소리와 묵직한 존재감이 있다.",traits:["남성적 외모","비주얼 담당","묵직함","존재감"],
+    legend:[
+      {kisu:"6기",quote:"(영철-영숙 나솔 첫 번째 결혼 커플 탄생)"},
+      {kisu:"10기",quote:"(707베이비 영철 — 역대 최다 가명 계승 기록)"}
+    ]},
+  상철:{g:'남',e:'⚖️',persona:'균형형 · 무난한 팀의 허리',desc:"두루두루 균형 잡힌 팀의 허리. 튀지 않지만 없으면 빈자리가 느껴지는 안정형.",traits:["균형형","무난함","안정적","팀의 허리"],
+    legend:[
+      {kisu:"10기",quote:"의사? So what? 검사? 필요없어. 난 진짜 100을 해줄 수 있어."},
+      {kisu:"10기",quote:"자기가 왕인가요?"}
+    ]}
 };
 
 const F_ORDER=['영숙','정숙','순자','영자','옥순','현숙'];
@@ -476,6 +526,14 @@ function openModal(charName) {
   document.getElementById('m-persona').textContent = ch.persona;
   document.getElementById('m-desc').textContent = ch.desc;
   document.getElementById('m-traits').innerHTML = ch.traits.map(t => `<span class="trait">${t}</span>`).join('');
+
+  // 레전드 기수 & 명대사
+  document.getElementById('m-legend').innerHTML = (ch.legend || []).map(l => `
+    <div style="background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;">
+      <span style="display:inline-block;background:var(--pl);color:var(--pd);font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;margin-bottom:6px">${l.kisu}</span>
+      <div style="font-size:14px;font-weight:500;color:var(--t);line-height:1.6">"${l.quote}"</div>
+    </div>`).join('');
+
   document.getElementById('m-who').textContent = matched.length > 0 ? `이 캐릭터로 매칭된 팀원 (${matched.length}명)` : '아직 이 캐릭터로 매칭된 팀원이 없어요';
   document.getElementById('m-parts').innerHTML = matched.map(d => `<div class="modal-p"><span style="font-size:16px">${d.emoji||'🌹'}</span><span style="font-weight:500">${d.name}</span><span style="color:var(--t2);font-size:12px">· ${d.date} ${d.time}</span></div>`).join('');
   document.getElementById('modal-bg').classList.remove('hidden');
