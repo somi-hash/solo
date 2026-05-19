@@ -402,52 +402,82 @@ function restart(){
   showQ('ss');
 }
 
-function renderStat(){
-  const data=getLocal();
-  const now=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('stat-updated').textContent=`마지막 업데이트 ${now}`;
-  const el=document.getElementById('stat-body');
-  if(data.length===0){el.innerHTML='<div class="empty">아직 참여자가 없어요 🥲</div>';return;}
-  const fData=data.filter(d=>d.gender==='여');
-  const mData=data.filter(d=>d.gender==='남');
-  const sumHtml=`<div class="stat-summary">
+// 구글 시트에서 전체 데이터 가져오기
+let sheetCache = null;
+
+async function fetchSheetData() {
+  const res = await fetch(APPS_URL);
+  const data = await res.json();
+  sheetCache = data;
+  return data;
+}
+
+async function renderStat() {
+  const el = document.getElementById('stat-body');
+  const now = new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('stat-updated').textContent = `불러오는 중...`;
+  el.innerHTML = '<div class="empty">⏳ 데이터 불러오는 중...</div>';
+
+  let data;
+  try {
+    data = await fetchSheetData();
+  } catch(err) {
+    el.innerHTML = '<div class="empty">⚠️ 데이터를 불러오지 못했어요.<br>네트워크를 확인하거나 새로고침해주세요.</div>';
+    return;
+  }
+
+  document.getElementById('stat-updated').textContent = `마지막 업데이트 ${now}`;
+
+  if (!data || data.length === 0) {
+    el.innerHTML = '<div class="empty">아직 참여자가 없어요 🥲</div>';
+    return;
+  }
+
+  const fData = data.filter(d => d.gender === '여');
+  const mData = data.filter(d => d.gender === '남');
+
+  const sumHtml = `<div class="stat-summary">
     <div class="ssum"><div class="ssum-num">${data.length}</div><div class="ssum-label">전체 참여</div></div>
     <div class="ssum"><div class="ssum-num" style="color:var(--pink)">${fData.length}</div><div class="ssum-label">여성</div></div>
     <div class="ssum"><div class="ssum-num" style="color:#3949AB">${mData.length}</div><div class="ssum-label">남성</div></div>
   </div>`;
-  const listHtml=`<div class="sec-title">참여자 목록</div>
-    <div class="p-list">${[...data].reverse().map(d=>`
+
+  const listHtml = `<div class="sec-title">참여자 목록</div>
+    <div class="p-list">${[...data].reverse().map(d => `
       <div class="p-item">
         <div class="p-av">${d.name.charAt(0)}</div>
-        <div><div class="p-name">${d.name}</div><div class="p-info">${d.emoji} ${d.char} · ${d.date} ${d.time}</div></div>
+        <div><div class="p-name">${d.name}</div><div class="p-info">${d.emoji||'🌹'} ${d.char} · ${d.date} ${d.time}</div></div>
         <span class="p-tag ${d.gender==='여'?'f':'m'}">${d.gender}성</span>
       </div>`).join('')}</div>`;
-  function cgHtml(order,gd,isF){
-    const cnt={};order.forEach(c=>cnt[c]=0);
-    gd.forEach(d=>{if(cnt[d.char]!==undefined)cnt[d.char]++;});
-    const mx=Math.max(...Object.values(cnt),1);
-    return order.map(c=>`<div class="char-card ${cnt[c]===0?'zero':''}" onclick="openModal('${c}')">
+
+  function cgHtml(order, gd, isF) {
+    const cnt = {}; order.forEach(c => cnt[c] = 0);
+    gd.forEach(d => { if(cnt[d.char] !== undefined) cnt[d.char]++; });
+    const mx = Math.max(...Object.values(cnt), 1);
+    return order.map(c => `<div class="char-card ${cnt[c]===0?'zero':''}" onclick="openModal('${c}')">
       <div class="ce">${CH[c].e}</div><div class="cn">${c}</div>
       <div class="ck">${cnt[c]}명</div>
       <div class="cbw"><div class="cb ${isF?'f':''}" style="width:${Math.round((cnt[c]/mx)*100)}%"></div></div>
     </div>`).join('');
   }
-  const fgHtml=fData.length>0?`<div class="sec-title">👩 여성 캐릭터 분포 <span style="font-weight:400;opacity:.6">(클릭하면 상세 보기)</span></div><div class="char-grid">${cgHtml(F_ORDER,fData,true)}</div>`:'';
-  const mgHtml=mData.length>0?`<div class="sec-title">👨 남성 캐릭터 분포 <span style="font-weight:400;opacity:.6">(클릭하면 상세 보기)</span></div><div class="char-grid">${cgHtml(M_ORDER,mData,false)}</div>`:'';
-  el.innerHTML=sumHtml+listHtml+fgHtml+mgHtml;
+
+  const fgHtml = fData.length > 0 ? `<div class="sec-title">👩 여성 캐릭터 분포 <span style="font-weight:400;opacity:.6">(클릭하면 상세 보기)</span></div><div class="char-grid">${cgHtml(F_ORDER,fData,true)}</div>` : '';
+  const mgHtml = mData.length > 0 ? `<div class="sec-title">👨 남성 캐릭터 분포 <span style="font-weight:400;opacity:.6">(클릭하면 상세 보기)</span></div><div class="char-grid">${cgHtml(M_ORDER,mData,false)}</div>` : '';
+
+  el.innerHTML = sumHtml + listHtml + fgHtml + mgHtml;
 }
 
-function openModal(charName){
-  const ch=CH[charName];
-  const data=getLocal();
-  const matched=data.filter(d=>d.char===charName);
-  document.getElementById('m-emoji').textContent=ch.e;
-  document.getElementById('m-name').textContent=charName;
-  document.getElementById('m-persona').textContent=ch.persona;
-  document.getElementById('m-desc').textContent=ch.desc;
-  document.getElementById('m-traits').innerHTML=ch.traits.map(t=>`<span class="trait">${t}</span>`).join('');
-  document.getElementById('m-who').textContent=matched.length>0?`이 캐릭터로 매칭된 팀원 (${matched.length}명)`:'아직 이 캐릭터로 매칭된 팀원이 없어요';
-  document.getElementById('m-parts').innerHTML=matched.map(d=>`<div class="modal-p"><span style="font-size:16px">${d.emoji}</span><span style="font-weight:500">${d.name}</span><span style="color:var(--t2);font-size:12px">· ${d.date} ${d.time}</span></div>`).join('');
+function openModal(charName) {
+  const ch = CH[charName];
+  const data = sheetCache || [];
+  const matched = data.filter(d => d.char === charName);
+  document.getElementById('m-emoji').textContent = ch.e;
+  document.getElementById('m-name').textContent = charName;
+  document.getElementById('m-persona').textContent = ch.persona;
+  document.getElementById('m-desc').textContent = ch.desc;
+  document.getElementById('m-traits').innerHTML = ch.traits.map(t => `<span class="trait">${t}</span>`).join('');
+  document.getElementById('m-who').textContent = matched.length > 0 ? `이 캐릭터로 매칭된 팀원 (${matched.length}명)` : '아직 이 캐릭터로 매칭된 팀원이 없어요';
+  document.getElementById('m-parts').innerHTML = matched.map(d => `<div class="modal-p"><span style="font-size:16px">${d.emoji||'🌹'}</span><span style="font-weight:500">${d.name}</span><span style="color:var(--t2);font-size:12px">· ${d.date} ${d.time}</span></div>`).join('');
   document.getElementById('modal-bg').classList.remove('hidden');
 }
 function closeModal(e){if(e.target===document.getElementById('modal-bg'))document.getElementById('modal-bg').classList.add('hidden');}
